@@ -43,14 +43,41 @@ export default function Home() {
         setFullText(data.fullText);
         setTranslatedSummary(translateToUrdu(data.summary));
         const saveRes = await fetch("/api/savetosupa", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ url, summary: data.summary }),
-});
-const saveData = await saveRes.json();
-if (!saveData.success) {
-  console.error("Failed to save summary:", saveData.error);
-}
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, summary: data.summary }),
+        });
+        const saveData = await saveRes.json();
+        if (!saveData.success) {
+          console.error("Failed to save summary:", saveData.error);
+        }
+        console.log("Sending to MongoDB:", {
+          url,
+          fullText: data.fullText,
+        });
+    const mongoRes = await fetch("/api/save-fulltext-mongo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url,
+          fullText: data.fullText,
+        }),
+      });
+ const mongoData = await mongoRes.json();
+      if (!mongoRes.ok || !mongoData.success) {
+        console.error("Failed to save to Mongo:", mongoData.error);
+        setError(`Failed to save to Mongo: ${mongoData.error}`);
+      } else {
+        console.log("✅ Saved to Mongo successfully!");
+         alert(
+            `Saved to MongoDB!\nID: ${mongoData.data.mongoId
+            }\nTime: ${new Date(mongoData.data.createdAt).toLocaleString()}`
+          );
+      }
+         
+        
       }
     } catch {
       setError("Something went wrong. Please check the server.");
@@ -95,14 +122,16 @@ if (!saveData.success) {
       </Button>
       {error && (
         <div className="text-red-500 border border-red-300 p-3 rounded bg-red-50">
-          ⚠️ {error}
+          {error}
         </div>
       )}
       {summary && (
         <>
           <h2 className="text-xl font-semibold mt-6">AI Summary (English):</h2>
           <Textarea readOnly value={summary} className="min-h-[100px]" />
-          <h2 className="text-xl font-semibold mt-6">ترجمہ شدہ خلاصہ (Urdu):</h2>
+          <h2 className="text-xl font-semibold mt-6">
+            ترجمہ شدہ خلاصہ (Urdu):
+          </h2>
           <Textarea
             readOnly
             value={translatedSummary}
