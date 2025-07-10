@@ -18,47 +18,48 @@ export default function Home() {
   const [summary, setSummary] = useState("");
   const [translatedSummary, setTranslatedSummary] = useState("");
   const [fullText, setFullText] = useState("");
-
   const handleScrape = async () => {
     setError("");
     setSummary("");
     setFullText("");
     setTranslatedSummary("");
     setLoading(true);
-
     if (!url.trim()) {
       setError("Please enter or select a valid URL.");
       setLoading(false);
       return;
     }
-
     try {
       const res = await fetch("/api/scrape", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url }),
       });
-
       const data = await res.json();
-
       if (!res.ok || !data.summary) {
         setError("Failed to scrape the blog. Try a different URL.");
       } else {
         setSummary(data.summary);
         setFullText(data.fullText);
         setTranslatedSummary(translateToUrdu(data.summary));
+        const saveRes = await fetch("/api/savetosupa", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url, summary: data.summary }),
+});
+const saveData = await saveRes.json();
+if (!saveData.success) {
+  console.error("Failed to save summary:", saveData.error);
+}
       }
     } catch {
       setError("Something went wrong. Please check the server.");
     }
-
     setLoading(false);
   };
-
   return (
     <main className="max-w-2xl mx-auto px-4 py-10 space-y-4 font-sans">
       <h1 className="text-2xl font-bold">Blog Summariser</h1>
-
       <div className="space-y-2">
         <label className="font-medium">Choose a sample blog:</label>
         <Select onValueChange={(val: string) => setUrl(val)}>
@@ -78,7 +79,6 @@ export default function Home() {
           </SelectContent>
         </Select>
       </div>
-
       <div className="space-y-2">
         <label className="font-medium">Or enter a custom blog URL:</label>
         <Input
@@ -93,25 +93,21 @@ export default function Home() {
       <Button onClick={handleScrape} disabled={loading}>
         {loading ? "Scraping..." : "Scrape & Summarize"}
       </Button>
-
       {error && (
         <div className="text-red-500 border border-red-300 p-3 rounded bg-red-50">
           ⚠️ {error}
         </div>
       )}
-
       {summary && (
         <>
           <h2 className="text-xl font-semibold mt-6">AI Summary (English):</h2>
           <Textarea readOnly value={summary} className="min-h-[100px]" />
-
           <h2 className="text-xl font-semibold mt-6">ترجمہ شدہ خلاصہ (Urdu):</h2>
           <Textarea
             readOnly
             value={translatedSummary}
             className="min-h-[100px] font-[serif]"
           />
-
           <h2 className="text-xl font-semibold mt-6">Full Text:</h2>
           <Textarea readOnly value={fullText} className="min-h-[200px]" />
         </>
