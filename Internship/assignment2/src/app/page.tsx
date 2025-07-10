@@ -70,14 +70,13 @@ export default function Home() {
         console.error("Failed to save to Mongo:", mongoData.error);
         setError(`Failed to save to Mongo: ${mongoData.error}`);
       } else {
-        console.log("✅ Saved to Mongo successfully!");
-         alert(
-            `Saved to MongoDB!\nID: ${mongoData.data.mongoId
-            }\nTime: ${new Date(mongoData.data.createdAt).toLocaleString()}`
-          );
+        console.log("Saved to Mongo successfully!");
+       alert(
+  `Saved to MongoDB!\nID: ${mongoData.data.mongoId
+  }\nTime: ${new Date(mongoData.data.createdAt).toLocaleString()}
+  \nSaved to Supabase:\nID: ${saveData.id}`
+);
       }
-         
-        
       }
     } catch {
       setError("Something went wrong. Please check the server.");
