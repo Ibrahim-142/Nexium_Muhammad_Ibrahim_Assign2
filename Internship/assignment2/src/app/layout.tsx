@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,6 +25,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black`}
       >
         {children}
+         <Toaster position="top-center" richColors />
         <footer className="border-t border-gray-200 mt-12 pt-6 pb-8 text-sm text-gray-600 max-w-3xl mx-auto px-4">
           <p className="font-semibold mb-2">Blog Scraper Content Note:</p>
           <p>The blog content rendered within this layout is cleaned and stripped of the following:</p>
