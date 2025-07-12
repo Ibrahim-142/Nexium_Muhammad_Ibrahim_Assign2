@@ -64,8 +64,9 @@ export default function Home() {
         });
       } else {
         toast.success("Saved to Supabase", {
-          description: `ID: ${saveData.id}`,
-        });
+  description: `ID: ${saveData.id} at ${new Date().toLocaleString()}`,
+});
+
       }
       setSavingMongo(true);
       const mongoRes = await fetch("/api/save-fulltext-mongo", {
@@ -83,11 +84,13 @@ export default function Home() {
           description: mongoData.error || "Could not save full text.",
         });
       } else {
-        toast.success("Saved to MongoDB", {
-          description: `ID: ${mongoData.data.mongoId} at ${new Date(
-            mongoData.data.createdAt
-          ).toLocaleString()}`,
-        });
+        setTimeout(() => {
+  toast.success("Saved to MongoDB", {
+    description: `ID: ${mongoData.data.mongoId} at ${new Date(
+      mongoData.data.createdAt
+    ).toLocaleString("en-PK", { timeZone: "Asia/Karachi" })}`,
+  });
+}, 4000);
       }
     } catch (err) {
       console.error(err);
