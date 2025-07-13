@@ -26,7 +26,7 @@ export default function RootLayout({
       >
         {children}
          <Toaster position="top-center" richColors />
-        <footer className="border-t border-gray-200 mt-12 pt-6 pb-8 text-sm text-gray-600 max-w-3xl mx-auto px-4">
+        {/* <footer className="border-t border-gray-200 mt-12 pt-6 pb-8 text-sm text-gray-600 max-w-3xl mx-auto px-4">
           <p className="font-semibold mb-2">Blog Scraper Content Note:</p>
           <p>The blog content rendered within this layout is cleaned and stripped of the following:</p>
           <ul className="list-disc list-inside my-2 ml-4">
@@ -36,7 +36,7 @@ export default function RootLayout({
             <li>Duplicate titles, redundant metadata, or promotional overlays</li>
           </ul>
           <p>Only meaningful article content — paragraphs, quotes, and inline story text — is retained. This ensures a clean, reader-focused experience free from unnecessary clutter.</p>
-        </footer>
+        </footer> */}
       </body>
     </html>
   );
