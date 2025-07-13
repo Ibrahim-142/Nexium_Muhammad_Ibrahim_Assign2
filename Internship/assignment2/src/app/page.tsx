@@ -19,6 +19,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { translateToUrdu } from "../../utils/translateToUrdu";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const [url, setUrl] = useState("");
@@ -72,9 +73,23 @@ export default function Home() {
         });
       } else {
         toast.success("Saved to Supabase", {
-          description: `ID: ${saveData.id} at ${new Date().toLocaleString()}`,
+          position: "top-center",
+          description: (
+            <>
+              ID: {saveData.id},
+              <br />
+              Date: {new Date().toLocaleDateString("en-PK", {
+                timeZone: "Asia/Karachi",
+              })},
+              <br />
+              Time: {new Date().toLocaleTimeString("en-PK", {
+                timeZone: "Asia/Karachi",
+              })}
+            </>
+          ),
         });
       }
+
       setSavingMongo(true);
       const mongoRes = await fetch("/api/save-fulltext-mongo", {
         method: "POST",
@@ -83,19 +98,29 @@ export default function Home() {
       });
       const mongoData = await mongoRes.json();
       setSavingMongo(false);
+
       if (!mongoRes.ok || !mongoData.success) {
         setError(`Failed to save to Mongo: ${mongoData.error}`);
         toast.error("MongoDB Error", {
           description: mongoData.error || "Could not save full text.",
         });
       } else {
-        setTimeout(() => {
-          toast.success("Saved to MongoDB", {
-            description: `ID: ${mongoData.data.mongoId} at ${new Date(
-              mongoData.data.createdAt
-            ).toLocaleString("en-PK", { timeZone: "Asia/Karachi" })}`,
-          });
-        }, 1000);
+        toast.success("Saved to MongoDB", {
+          position: "top-center",
+          description: (
+            <>
+              ID: {mongoData.data.mongoId},
+              <br />
+              Date: {new Date(mongoData.data.createdAt).toLocaleDateString("en-PK", {
+                timeZone: "Asia/Karachi",
+              })},
+              <br />
+              Time: {new Date(mongoData.data.createdAt).toLocaleTimeString("en-PK", {
+                timeZone: "Asia/Karachi",
+              })}
+            </>
+          ),
+        });
       }
     } catch {
       setError("Something went wrong. Please check the server.");
@@ -112,126 +137,148 @@ export default function Home() {
   const isLoading = scraping || savingSupa || savingMongo;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#00F260] via-[#0575E6] to-[#845EC2] px-4 py-12 font-sans text-white">
-      <div className="max-w-3xl mx-auto space-y-10">
-        <div className="text-center space-y-3">
-          <h1 className="text-5xl font-extrabold tracking-tight text-[#00F9FF] drop-shadow-lg">
-            Blog Summarizer & Translator
-          </h1>
-          <p className="text-base text-white/80">
-            Instantly summarize and translate blogs into Urdu — powered by AI.
-          </p>
+   <motion.main
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ duration: 0.5 }}
+  className="min-h-screen bg-gradient-to-br from-[#F0F4FF] via-[#E0E7FF] to-[#F0F4FF] px-4 py-12 font-sans text-[#1E293B]"
+>
+  <div className="max-w-3xl mx-auto space-y-10">
+    <div className="text-center space-y-3">
+      <h1 className="text-5xl font-extrabold tracking-tight text-[#7C3AED] drop-shadow-md">
+        Blog Summarizer & Translator
+      </h1>
+      <p className="text-base text-[#475569]">
+        Instantly summarize and translate blogs into Urdu — powered by Next.js.
+      </p>
+    </div>
+
+    <Card className="rounded-2xl shadow-md border border-[#7C3AED]/30 bg-white text-[#1E293B]">
+      <CardContent className="p-6 space-y-6">
+        <div className="space-y-2">
+          <label className="text-[#7C3AED] font-semibold text-sm">
+            Choose a sample blog:
+          </label>
+          <Select onValueChange={(val: string) => setUrl(val)}>
+            <SelectTrigger className="bg-white border border-[#CBD5E1] focus:ring-[#7C3AED] text-[#1E293B]">
+              <SelectValue placeholder="Select a blog URL..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="https://jamesclear.com/saying-no">
+                James Clear – Saying No
+              </SelectItem>
+              <SelectItem value="https://fs.blog/michael-abrashoff-leadership/">
+                Farnam Street – Leadership
+              </SelectItem>
+              <SelectItem value="https://www.dawn.com/news/1910002">
+                STARBUZZ: The Shah of Dramas
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <Card className="rounded-2xl shadow-xl border border-[#38BDF8]/40 bg-[#0f172a]/80 backdrop-blur-sm text-white">
-          <CardContent className="p-6 space-y-6">
-            <div className="space-y-2">
-              <label className="text-[#A78BFA] font-semibold text-sm">
-                Choose a sample blog:
-              </label>
-              <Select onValueChange={(val: string) => setUrl(val)}>
-                <SelectTrigger className="bg-[#1E293B] border border-[#64748B]/40 focus:ring-[#60A5FA] text-white">
-                  <SelectValue placeholder="Select a blog URL..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="https://jamesclear.com/saying-no">
-                    James Clear – Saying No
-                  </SelectItem>
-                  <SelectItem value="https://fs.blog/michael-abrashoff-leadership/">
-                    Farnam Street – Leadership
-                  </SelectItem>
-                  <SelectItem value="https://www.dawn.com/news/1910002">
-                    STARBUZZ: The Shah of Dramas
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[#A78BFA] font-semibold text-sm">
-                Or enter a custom blog URL:
-              </label>
-              <Input
-                placeholder="https://example.com/blog"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className="bg-[#1E293B] text-white border border-[#4ADE80]/40 focus:ring-[#22D3EE]"
-              />
-            </div>
-
-            <Button
-              onClick={handleScrape}
-              disabled={isLoading}
-              className="w-full bg-[#3B82F6] hover:bg-[#2563EB] text-white text-sm tracking-wide"
-            >
-              {isLoading && <Loader2 className="animate-spin w-4 h-4 mr-2" />}
-              {scraping
-                ? "Scraping..."
-                : savingSupa
-                  ? "Saving to Supabase..."
-                  : savingMongo
-                    ? "Saving to MongoDB..."
-                    : "Scrape & Summarize"}
-            </Button>
-
-            {error && (
-              <div className="bg-red-500/10 border border-red-400 text-red-300 p-3 rounded-md text-sm">
-                {error}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {summary && (
-          <div className="space-y-6">
-            <Card className="bg-[#1E293B]/90 border border-[#22D3EE]/40 shadow-md rounded-2xl text-white">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold text-[#22D3EE]">
-                  AI Summary (English)
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Textarea
-                  readOnly
-                  value={summary}
-                  className="min-h-[100px] bg-[#0F172A] text-white border-none"
-                />
-              </CardContent>
-            </Card>
-
-            <Card className="bg-[#2D2A55]/90 border border-[#F472B6]/40 rounded-2xl text-white">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold text-[#22D3EE]">
-                  خلاصے کا ترجمہ   (Urdu)
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Textarea
-                  readOnly
-                  value={translatedSummary}
-                  className="min-h-[100px] bg-[#1E1B4B] text-white font-[serif]"
-                />
-              </CardContent>
-            </Card>
-
-            <Card className="bg-[#164E63]/80 border border-[#67E8F9]/40 rounded-2xl text-white">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold text-[#67E8F9]">
-                  Full Text
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Textarea
-                  readOnly
-                  value={fullText}
-                  className="min-h-[200px] bg-[#082F49] text-white"
-                />
-              </CardContent>
-            </Card>
+        <div className="space-y-2">
+          <label className="text-[#7C3AED] font-semibold text-sm">
+            Or enter a custom blog URL:
+          </label>
+          <Input
+            placeholder="https://example.com/blog"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            className="bg-white text-[#1E293B] border border-[#94A3B8] focus:ring-[#7C3AED]"
+          />
+        </div>
+        <Button
+          onClick={handleScrape}
+          disabled={isLoading}
+          className={`hover:cursor-pointer w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-sm tracking-wide transition-all duration-300 ${
+            isLoading ? "opacity-70 cursor-not-allowed" : ""
+          }`}
+        >
+          {isLoading && <Loader2 className="animate-spin w-4 h-4 mr-2" />}
+          {scraping
+            ? "Scraping..."
+            : savingSupa
+            ? "Saving to Supabase..."
+            : savingMongo
+            ? "Saving to MongoDB..."
+            : "Scrape & Summarize"}
+        </Button>
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 p-3 rounded-md text-sm">
+            {error}
           </div>
         )}
+      </CardContent>
+    </Card>
+    {!isLoading && summary && (
+      <div className="space-y-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <Card className="bg-white border border-[#7C3AED]/40 shadow-sm rounded-2xl text-[#1E293B]">
+            <CardHeader>
+              <CardTitle className="text-lg font-bold text-[#7C3AED]">
+                AI Summary (English)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                readOnly
+                value={summary}
+                className="min-h-[100px] bg-[#F8FAFC] text-[#1E293B] border border-gray-200"
+              />
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Card className="bg-white border border-[#38BDF8]/40 rounded-2xl text-[#1E293B]">
+            <CardHeader>
+              <CardTitle className="text-lg font-bold text-[#38BDF8]">
+                خلاصے کا ترجمہ (Urdu)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                readOnly
+                value={translatedSummary}
+                className="min-h-[100px] bg-[#F0F9FF] text-[#0F172A] font-[serif]"
+              />
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Card className="bg-white border border-[#A5F3FC]/40 rounded-2xl text-[#1E293B]">
+            <CardHeader>
+              <CardTitle className="text-lg font-bold text-[#0E7490]">
+                Full Text
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                readOnly
+                value={fullText}
+                className="min-h-[200px] bg-[#ECFEFF] text-[#0F172A]"
+              />
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
-    </main>
+    )}
+  </div>
+</motion.main>
 
   );
 }
