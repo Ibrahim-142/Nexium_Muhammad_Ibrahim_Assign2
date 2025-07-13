@@ -29,7 +29,7 @@ export default function FooterDisclosure({ collapsed }: FooterDisclosureProps) {
           onClick={() => setOpen(!open)}
           className="cursor-pointer font-semibold text-blue-700 flex items-center justify-between w-full"
         >
-          <span>📄 What content gets scraped?</span>
+          <span>What content gets scraped?</span>
           <span className="ml-2">{open ? "−" : "+"}</span>
         </button>
 

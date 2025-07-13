@@ -16,4 +16,4 @@ Built with Shadcn, Tailwind CSS, and Framer Motion
 - Custom built Footer component to tell the User what was scraped
 - Session resets automatically on browser refresh or via navbar refresh
 - Sidebar (Navbar) includes working refresh button and route navigation (Home, Full Text)
-  
+  Vercel Link:https://nexium-muhammad-ibrahim-assign2.vercel.app/
