@@ -20,7 +20,10 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { translateToUrdu } from "../../utils/translateToUrdu";
 import { motion } from "framer-motion";
-
+import Navbar from "@/components/ui/Navbar"; 
+import FooterDisclosure from "@/components/ui/FooterDisclosure"; 
+import { useEffect } from "react";
+import Link from "next/link";
 export default function Home() {
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
@@ -30,7 +33,25 @@ export default function Home() {
   const [scraping, setScraping] = useState(false);
   const [savingSupa, setSavingSupa] = useState(false);
   const [savingMongo, setSavingMongo] = useState(false);
+const [collapsed, setCollapsed] = useState(false);
+useEffect(() => {
+  const savedSummary = sessionStorage.getItem("summary");
+  const savedTranslated = sessionStorage.getItem("translatedSummary");
+  const savedUrl = sessionStorage.getItem("url");
+  const savedFullText = sessionStorage.getItem("fullText");
 
+  if (savedSummary && savedTranslated && savedUrl && savedFullText) {
+    setSummary(savedSummary);
+    setTranslatedSummary(savedTranslated);
+    setUrl(savedUrl);
+    setFullText(savedFullText);
+  }
+}, []);
+useEffect(() => {
+  if (fullText) {
+    sessionStorage.setItem("fullText", fullText);
+  }
+}, [fullText]);
   const handleScrape = async () => {
     setError("");
     setSummary("");
@@ -57,8 +78,12 @@ export default function Home() {
       setSummary(data.summary);
       setFullText(data.fullText);
       setTranslatedSummary(translateToUrdu(data.summary));
+      sessionStorage.setItem("summary", data.summary);
+sessionStorage.setItem("translatedSummary", translateToUrdu(data.summary));
+sessionStorage.setItem("url", url);
       setScraping(false);
       setSavingSupa(true);
+      
       const saveRes = await fetch("/api/savetosupa", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -137,12 +162,18 @@ export default function Home() {
   const isLoading = scraping || savingSupa || savingMongo;
 
   return (
-   <motion.main
+    <>
+      <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
+    <motion.main
   initial={{ opacity: 0 }}
   animate={{ opacity: 1 }}
   transition={{ duration: 0.5 }}
-  className="min-h-screen bg-gradient-to-br from-[#F0F4FF] via-[#E0E7FF] to-[#F0F4FF] px-4 py-12 font-sans text-[#1E293B]"
+  className={`transition-all duration-300
+    ${collapsed ? "ml-16" : "ml-60"}
+    min-h-screen bg-gradient-to-br from-[#F0F4FF] via-[#E0E7FF] to-[#F0F4FF]
+    px-4 py-12 font-sans text-[#1E293B]`}
 >
+
   <div className="max-w-3xl mx-auto space-y-10">
     <div className="text-center space-y-3">
       <h1 className="text-5xl font-extrabold tracking-tight text-[#7C3AED] drop-shadow-md">
@@ -160,7 +191,7 @@ export default function Home() {
             Choose a sample blog:
           </label>
           <Select onValueChange={(val: string) => setUrl(val)}>
-            <SelectTrigger className="bg-white border border-[#CBD5E1] focus:ring-[#7C3AED] text-[#1E293B]">
+            <SelectTrigger className="bg-white border w-full border-[#CBD5E1] focus:ring-[#7C3AED] text-[#1E293B]">
               <SelectValue placeholder="Select a blog URL..." />
             </SelectTrigger>
             <SelectContent>
@@ -185,7 +216,7 @@ export default function Home() {
             placeholder="https://example.com/blog"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className="bg-white text-[#1E293B] border border-[#94A3B8] focus:ring-[#7C3AED]"
+            className="bg-white text-[#1E293B] border border-[#94A3B8]  focus:ring-[#7C3AED]"
           />
         </div>
         <Button
@@ -254,31 +285,20 @@ export default function Home() {
             </CardContent>
           </Card>
         </motion.div>
+       <div className="text-center mt-4">
+  <Link
+    href="/full-text"
+    className="inline-block text-sm text-blue-700 font-semibold hover:underline"
+  >
+    View Full Text
+  </Link>
+</div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <Card className="bg-white border border-[#A5F3FC]/40 rounded-2xl text-[#1E293B]">
-            <CardHeader>
-              <CardTitle className="text-lg font-bold text-[#0E7490]">
-                Full Text
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                readOnly
-                value={fullText}
-                className="min-h-[200px] bg-[#ECFEFF] text-[#0F172A]"
-              />
-            </CardContent>
-          </Card>
-        </motion.div>
       </div>
     )}
   </div>
 </motion.main>
-
+<FooterDisclosure collapsed={collapsed} />
+</>
   );
 }

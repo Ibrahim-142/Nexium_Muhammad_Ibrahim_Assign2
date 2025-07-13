@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
-import FooterDisclosure from "@/components/ui/FooterDisclosure"; 
+import SessionResetter from "../../utils/SessionResetter";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -17,16 +17,20 @@ export const metadata: Metadata = {
 };
 export default function RootLayout({
   children,
+  
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>)
+
+ {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-[#F0F9FF] via-[#E0F2FE] to-[#F0FDFA] text-gray-900 min-h-screen flex flex-col`}
       >
+         <SessionResetter />
         <main className="flex-grow">{children}</main>
-        <FooterDisclosure />
+  
         <Toaster position="top-center" richColors />
       </body>
     </html>
