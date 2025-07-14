@@ -10,7 +10,6 @@ export const urduDictionary = {
   "that": "وہ",
   "these": "یہ",
   "those": "وہ",
-
   "you": "تم",
   "he": "وہ",
   "she": "وہ",
@@ -373,7 +372,6 @@ export const urduDictionary = {
   "his": "اس کا ",
   "by": "سے، کے ذریعے",
   "from": "سے",
- 
   "say": "کہنا",
   "her": "اس کی ",
   "she": "وہ ",
@@ -720,7 +718,12 @@ export const urduDictionary = {
   "stories": "کہانیاں",
   "comedies": "مزاحیہ کہانیاں",
   "unearthed": "سامنے آنا",
-   "either": "یا تو"
+   "either": "یا تو", 
+  "Murder-mystery": "قتل معمہ",
+  "thrillers": "سنسی خیز کہانیاں",
+  "I’m": "میں ہوں",
+  "huge": "بہت بڑا",
+  "fan":"شوقین"
 };
 export function translateToUrdu(text) {
   return text
