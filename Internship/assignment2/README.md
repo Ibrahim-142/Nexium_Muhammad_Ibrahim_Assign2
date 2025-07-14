@@ -6,6 +6,7 @@ Built with Shadcn, Tailwind CSS, and Framer Motion
 - Scrape any blog post (custom URL or choose from samples)
 - AI Summary generation (Static Logic)
 - Urdu translation using a custom JS dictionary file
+- JS Dictionary contains **728** WORDS of English mapped to urdu meanings
 - Dual database persistence: Supabase for summaries, MongoDB for full text
 - Elegant UI with Tailwind CSS, Shadcn UI, and Framer Motion for basic Tranistions
 - Responsive and accessible design
