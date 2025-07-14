@@ -723,7 +723,8 @@ export const urduDictionary = {
   "thrillers": "سنسی خیز کہانیاں",
   "I’m": "میں ہوں",
   "huge": "بہت بڑا",
-  "fan":"شوقین"
+  "fan":"شوقین",
+  "hats": "ٹوپیاں"
 };
 export function translateToUrdu(text) {
   return text
